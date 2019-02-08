@@ -5,10 +5,10 @@ And to test the environment and hyperparameters you want just :
 ```
 python3.6 test-yourself.py
 ```
-
 Then follow the instructions.
 
-## Dependencies :
+**Dependencies** 
+
 * **OpenAI Gym** : Providing all the environements. (and gym[atari] if you want atari games also).
 * **Keras** : For the Deep-Q Neural Network.
 
