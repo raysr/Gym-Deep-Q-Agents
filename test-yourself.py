@@ -7,7 +7,7 @@ import random
 import numpy as np
 import gym
 
-import os
+
 
 all_envs = gym.envs.registry.all()
 env_ids = [env_spec.id for env_spec in all_envs]
@@ -19,15 +19,23 @@ selected=int(input("Select the environment to learn (Number) : "))
 env = gym.make(env_ids[selected])
 
 # Create network. Input is two consecutive game states, output is Q-values of the possible moves.
-model = Sequential()
-model.add(Dense(20, input_shape=(2,) + env.observation_space.shape, init='uniform', activation='relu'))
-model.add(Flatten())       # Flatten input so as to have no problems with processing
-model.add(Dense(18, init='uniform', activation='relu'))
-model.add(Dense(18, init='uniform', activation='relu'))
-model.add(Dense(18, init='uniform', activation='relu'))
-model.add(Dense(10, init='uniform', activation='relu'))
-model.add(Dense(env.action_space.n, init='uniform', activation='linear'))    # Same number of outputs as possible actions
-
+if not (os.path.exists('./file.txt')):
+    model = Sequential()
+    model.add(Dense(20, input_shape=(2,) + env.observation_space.shape, init='uniform', activation='relu'))
+    model.add(Flatten())       # Flatten input so as to have no problems with processing
+    model.add(Dense(18, init='uniform', activation='relu'))
+    model.add(Dense(18, init='uniform', activation='relu'))
+    model.add(Dense(18, init='uniform', activation='relu'))
+    model.add(Dense(10, init='uniform', activation='relu'))
+    model.add(Dense(env.action_space.n, init='uniform', activation='linear'))    # Same number of outputs as possible actions
+else:
+    json_file = open('model.json', 'r')
+    loaded_model_json = json_file.read()
+    json_file.close()
+    loaded_model = model_from_json(loaded_model_json)
+    # load weights into new model
+    loaded_model.load_weights("model_weights.h5")
+    print("Loaded model from disk")
 model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
 
 
