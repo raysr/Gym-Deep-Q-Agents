@@ -1,7 +1,8 @@
 from keras.models import Sequential
 from keras.layers import Flatten, Dense
 from collections import deque
-
+from keras.models import model_from_json
+import os
 import random
 import numpy as np
 import gym
@@ -21,6 +22,8 @@ env = gym.make(env_ids[selected])
 model = Sequential()
 model.add(Dense(20, input_shape=(2,) + env.observation_space.shape, init='uniform', activation='relu'))
 model.add(Flatten())       # Flatten input so as to have no problems with processing
+model.add(Dense(18, init='uniform', activation='relu'))
+model.add(Dense(18, init='uniform', activation='relu'))
 model.add(Dense(18, init='uniform', activation='relu'))
 model.add(Dense(10, init='uniform', activation='relu'))
 model.add(Dense(env.action_space.n, init='uniform', activation='linear'))    # Same number of outputs as possible actions
@@ -43,6 +46,8 @@ obs = np.expand_dims(observation, axis=0)
 state = np.stack((obs, obs), axis=1)
 done = False
 for i in range(observetime):
+    os.system("clear")
+    print("Observe "+str(i))
     if (np.random.rand()<= epsilon): # Random factor
         action = np.random.randint(0, env.action_space.n, size=1)[0] # Random move
     else:
@@ -70,6 +75,8 @@ targets = np.zeros((mb_size, env.action_space.n))
 
 print("Learning phase")
 for i in range (0, mb_size):
+    os.system("clear")
+    print(str(i)+"/"+str(mb_size)+" batch")
     state = minibatch[i][0]
     action = minibatch[i][1]
     reward = minibatch[i][2]
@@ -101,4 +108,11 @@ while not done:
     obs = np.expand_dims(observation, axis=0)
     state = np.append(np.expand_dims(obs, axis=0), state[:, :1, :], axis=1)    
     tot_reward += reward
+# serialize model to JSON
+model_json = model.to_json()
+with open("model.json", "w") as json_file:
+    json_file.write(model_json)
+# serialize weights to HDF5
+model.save_weights("model_weights.h5")
+print("Saved model to disk")
 print("End of the game")
