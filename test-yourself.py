@@ -18,8 +18,8 @@ for i in env_ids:
     a+=1
 '''
 selected=494
-env = gym.make(env_ids[selected])
-print(" Training on : "+str(env_ids[selected]))
+env = gym.make("Breakout-ram-v0")
+print(" Training on : Breakout-ram-v0")
 
 # Create network. Input is two consecutive game states, output is Q-values of the possible moves.
 if not (os.path.exists('./model_weights.h5')):
